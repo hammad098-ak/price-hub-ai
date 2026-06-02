@@ -476,7 +476,13 @@ def logout():
     session.pop('user_id', None)
     return redirect(url_for('login'))
 
+# ========== FIX FOR RENDER / PRODUCTION ==========
+# Create tables on app startup (works with gunicorn)
+with app.app_context():
+    db.create_all()
+    print("✅ Database tables created/verified.")
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True)
+    # For local development; Render uses gunicorn, not this block
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
