@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Analytics - Price Hub AI{% endblock %}
+{% block page_title %}Analytics{% endblock %}
+{% block page_subtitle %}Market insights from your data{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:30px; max-width:1000px; margin:0 auto;">
+    <div class="card">
+        <h3 style="margin-bottom:20px;">Average Price by Brand</h3>
+        <canvas id="brandChart" width="400" height="300"></canvas>
+    </div>
+    <div class="card">
+        <h3 style="margin-bottom:20px;">Depreciation Curve (sample car)</h3>
+        <canvas id="depreciationChart" width="400" height="300"></canvas>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const brandLabels = [{% for brand in brand_avg %}'{{ brand }}',{% endfor %}];
+    const brandValues = [{% for price in brand_avg.values() %}{{ price }},{% endfor %}];
+    const depLabels = [{% for age in depreciation_labels %}{{ age }},{% endfor %}];
+    const depValues = [{% for val in depreciation_values %}{{ val }},{% endfor %}];
+
+    new Chart(document.getElementById('brandChart'), {
+        type: 'bar',
+        data: {
+            labels: brandLabels,
+            datasets: [{
+                label: 'Avg Price (Lakhs)',
+                data: brandValues,
+                backgroundColor: 'rgba(56,239,125,0.3)',
+                borderColor: '#38ef7d',
+                borderWidth: 2
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+
+    new Chart(document.getElementById('depreciationChart'), {
+        type: 'line',
+        data: {
+            labels: depLabels,
+            datasets: [{
+                label: 'Value (Lakhs)',
+                data: depValues,
+                borderColor: '#11998e',
+                backgroundColor: 'transparent',
+                borderWidth: 3,
+                tension: 0.3
+            }]
+        },
+        options: { responsive: true }
+    });
+</script>
+{% endblock %}

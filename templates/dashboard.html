@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Price Hub AI{% endblock %}
+{% block page_title %}Vehicle Valuation{% endblock %}
+{% block page_subtitle %}AI‑powered market intelligence{% endblock %}
+
+{% block head %}
+<style>
+    .wizard-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .wizard-card {
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border: 1px solid rgba(56, 239, 125, 0.2);
+        border-radius: 32px;
+        box-shadow: 0 0 80px rgba(56, 239, 125, 0.1), 0 30px 60px rgba(0, 0, 0, 0.6);
+        padding: 50px 50px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .wizard-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(from 0deg, transparent, rgba(56,239,125,0.1), transparent, rgba(56,239,125,0.1), transparent);
+        animation: rotateBorder 8s linear infinite;
+        z-index: -1;
+    }
+    @keyframes rotateBorder {
+        100% { transform: rotate(360deg); }
+    }
+    .wizard-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 0 120px rgba(56, 239, 125, 0.2), 0 40px 80px rgba(0, 0, 0, 0.8);
+    }
+    .steps {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 35px;
+        position: relative;
+    }
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+        position: relative;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 600;
+        transition: color 0.3s;
+        cursor: pointer;
+        z-index: 1;
+    }
+    .step.active {
+        color: #38ef7d;
+    }
+    .step-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.03);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 8px;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s;
+        position: relative;
+    }
+    .step.active .step-icon {
+        background: rgba(56, 239, 125, 0.15);
+        border-color: #38ef7d;
+        box-shadow: 0 0 25px rgba(56, 239, 125, 0.4);
+        animation: pulseGlow 1.5s infinite;
+    }
+    @keyframes pulseGlow {
+        0% { box-shadow: 0 0 15px rgba(56,239,125,0.3); }
+        50% { box-shadow: 0 0 30px rgba(56,239,125,0.6); }
+        100% { box-shadow: 0 0 15px rgba(56,239,125,0.3); }
+    }
+    .step-line {
+        position: absolute;
+        top: 22px;
+        left: 50%;
+        right: 0;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: 0;
+    }
+    .step:last-child .step-line {
+        display: none;
+    }
+    .step.active .step-line {
+        background: linear-gradient(90deg, #38ef7d, transparent);
+    }
+    .form-section {
+        margin-bottom: 25px;
+    }
+    .form-section label {
+        display: block;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #94a3b8;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    select, input {
+        width: 100%;
+        padding: 16px 20px;
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        color: white;
+        font-size: 15px;
+        outline: none;
+        transition: all 0.3s;
+        appearance: none;
+        cursor: pointer;
+        font-family: 'Inter', sans-serif;
+    }
+    select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8.825a.5.5 0 0 1-.354-.146l-4-4a.5.5 0 0 1 .708-.708L6 7.618l3.646-3.647a.5.5 0 0 1 .708.708l-4 4A.5.5 0 0 1 6 8.825z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        background-size: 12px;
+    }
+    select option { background: #0f172a; color: white; }
+    select:focus, input:focus {
+        border-color: #38ef7d;
+        box-shadow: 0 0 0 4px rgba(56, 239, 125, 0.15), 0 0 30px rgba(56,239,125,0.1);
+        background: rgba(15, 23, 42, 0.9);
+    }
+    select:hover, input:hover {
+        border-color: rgba(56,239,125,0.3);
+    }
+    .btn-primary {
+        width: 100%;
+        background: linear-gradient(135deg, #38ef7d, #11998e);
+        color: #060913;
+        border: none;
+        padding: 18px;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 17px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 20px;
+        box-shadow: 0 10px 30px rgba(56, 239, 125, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    .btn-primary::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.3), transparent 70%);
+        transform: scale(0);
+        transition: transform 0.6s;
+    }
+    .btn-primary:hover::after {
+        transform: scale(1);
+    }
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #2ecc71, #0d8a72);
+        box-shadow: 0 15px 40px rgba(56, 239, 125, 0.5);
+        transform: translateY(-3px);
+    }
+    .result-box {
+        margin-top: 30px;
+        padding: 25px;
+        background: rgba(56, 239, 125, 0.05);
+        border: 1px solid rgba(56, 239, 125, 0.25);
+        border-radius: 16px;
+        text-align: center;
+        backdrop-filter: blur(5px);
+        animation: fadeInUp 0.6s ease;
+    }
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .result-price {
+        font-size: 36px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #38ef7d, #11998e);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 30px rgba(56,239,125,0.3);
+    }
+    .result-details {
+        font-size: 15px;
+        color: #cbd5e1;
+        margin-top: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="wizard-container">
+    <div class="wizard-card tilt-card" id="wizardCard">
+        <div class="steps">
+            <div class="step active" id="step1"><div class="step-icon"><i class="fas fa-car-side"></i></div><span>Model</span><div class="step-line"></div></div>
+            <div class="step" id="step2"><div class="step-icon"><i class="fas fa-cogs"></i></div><span>Variant</span><div class="step-line"></div></div>
+            <div class="step" id="step3"><div class="step-icon"><i class="fas fa-check-circle"></i></div><span>Condition</span><div class="step-line"></div></div>
+            <div class="step" id="step4"><div class="step-icon"><i class="fas fa-calendar-alt"></i></div><span>Year</span><div class="step-line"></div></div>
+            <div class="step" id="step5"><div class="step-icon"><i class="fas fa-tachometer-alt"></i></div><span>KM</span></div>
+        </div>
+
+        <form action="/predict" method="POST" id="valuationForm">
+            <div class="form-section">
+                <label>Select Model</label>
+                <select name="model_id" id="modelSelect" required onchange="updateVariants(); updateBackground(); highlightStep(1);">
+                    <option value="" disabled {% if not selected_model %}selected{% endif %}>Choose your car model</option>
+                    {% for id, name in car_models.items() %}
+                        <option value="{{ id }}" {% if selected_model == id %}selected{% endif %}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-section">
+                <label>Select Variant</label>
+                <select name="variant_id" id="variantSelect" required onchange="highlightStep(2);">
+                    <option value="" disabled selected>First pick a model above</option>
+                </select>
+            </div>
+            <div class="form-section">
+                <label>Condition</label>
+                <select name="condition" onchange="highlightStep(3);">
+                    <option value="Excellent" {% if selected_condition == 'Excellent' %}selected{% endif %}>Excellent</option>
+                    <option value="Good" {% if selected_condition == 'Good' %}selected{% endif %}>Good</option>
+                    <option value="Fair" {% if selected_condition == 'Fair' %}selected{% endif %}>Fair</option>
+                </select>
+            </div>
+            <div class="form-section">
+                <label>Registration Year</label>
+                <input type="number" name="year" placeholder="e.g., 2020" required min="2010" max="2026" onchange="highlightStep(4);">
+            </div>
+            <div class="form-section">
+                <label>Kilometers Driven</label>
+                <input type="number" name="kms" placeholder="e.g., 42000" required min="0" onchange="highlightStep(5);">
+            </div>
+            <button type="submit" class="btn-primary">Calculate Market Value →</button>
+        </form>
+
+        {% if prediction_text %}
+        <div class="result-box">
+            <div class="result-price">{{ prediction_text.split('–')[0] }}</div>
+            <div class="result-details">{{ prediction_text.split('–')[1] if '–' in prediction_text else '' }}</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const variantSelect = document.getElementById('variantSelect');
+    const modelSelect = document.getElementById('modelSelect');
+
+    async function updateVariants() {
+        const modelId = modelSelect.value;
+        variantSelect.innerHTML = '<option value="" disabled selected>Loading...</option>';
+        if (!modelId) {
+            variantSelect.innerHTML = '<option value="" disabled selected>First pick a model</option>';
+            return;
+        }
+        try {
+            const response = await fetch(`/get_variants/${modelId}`);
+            const variants = await response.json();
+            variantSelect.innerHTML = '<option value="" disabled selected>Choose variant</option>';
+            variants.forEach(v => {
+                const option = document.createElement('option');
+                option.value = v.variant_id;
+                option.textContent = `${v.variant_name} (₹${v.base_price}L)`;
+                variantSelect.appendChild(option);
+            });
+            {% if selected_variant %}
+                variantSelect.value = '{{ selected_variant }}';
+            {% endif %}
+        } catch (err) {
+            variantSelect.innerHTML = '<option value="" disabled>Error loading variants</option>';
+        }
+    }
+
+    function updateBackground() {
+        const modelId = modelSelect.value;
+        if (!modelId) return;
+        const modelName = modelSelect.options[modelSelect.selectedIndex].text;
+        const brand = modelName.split(' ')[0];
+        const imageUrl = `https://loremflickr.com/1920/1080/${brand},car`;
+        const img = new Image();
+        img.onload = function() {
+            document.body.style.backgroundImage = `url('${imageUrl}')`;
+        };
+        img.src = imageUrl;
+    }
+
+    function highlightStep(stepNumber) {
+        const steps = document.querySelectorAll('.step');
+        steps.forEach((step, index) => {
+            if (index < stepNumber) {
+                step.classList.add('active');
+            } else {
+                step.classList.remove('active');
+            }
+        });
+    }
+
+    // 3D tilt
+    const card = document.getElementById('wizardCard');
+    document.addEventListener('mousemove', (e) => {
+        if (!card) return;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = (y - centerY) / centerY * -4;
+        const rotateY = (x - centerX) / centerX * 4;
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+    document.addEventListener('mouseleave', () => {
+        if (card) card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+    });
+
+    window.addEventListener('load', () => {
+        if (modelSelect.value) {
+            updateVariants();
+            updateBackground();
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Settings - Price Hub AI{% endblock %}
+{% block page_title %}Settings{% endblock %}
+{% block page_subtitle %}Manage your account{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:500px; margin:0 auto;">
+    <h3 style="margin-bottom:20px;">Change Password</h3>
+    {% if msg %}
+    <p style="color:#38ef7d; margin-bottom:15px;">{{ msg }}</p>
+    {% endif %}
+    <form method="POST">
+        <div class="form-section">
+            <label>Current Password</label>
+            <input type="password" name="current_password" required>
+        </div>
+        <div class="form-section">
+            <label>New Password</label>
+            <input type="password" name="new_password" required>
+        </div>
+        <button type="submit" class="btn-primary">Update Password</button>
+    </form>
+</div>
+{% endblock %}

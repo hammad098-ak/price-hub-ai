@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}History - Price Hub AI{% endblock %}
+{% block page_title %}Valuation History{% endblock %}
+{% block page_subtitle %}Every valuation you've ever run{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 900px; margin: 0 auto;">
+    {% if valuations %}
+    <table style="width:100%; border-collapse: collapse;">
+        <thead>
+            <tr style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.1); color:#94a3b8;">
+                <th style="padding:15px 10px;">Date</th>
+                <th style="padding:15px 10px;">Car</th>
+                <th style="padding:15px 10px;">Year</th>
+                <th style="padding:15px 10px;">KM</th>
+                <th style="padding:15px 10px;">Condition</th>
+                <th style="padding:15px 10px;">Predicted Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in valuations %}
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition: background 0.2s;">
+                <td style="padding:12px 10px;">{{ v.timestamp.strftime('%d %b %Y, %H:%M') }}</td>
+                <td style="padding:12px 10px;">{{ v.model_name }} {{ v.variant_name }}</td>
+                <td style="padding:12px 10px;">{{ v.year }}</td>
+                <td style="padding:12px 10px;">{{ v.kms }}</td>
+                <td style="padding:12px 10px;">{{ v.condition }}</td>
+                <td style="padding:12px 10px; color:#38ef7d;">₹ {{ v.predicted_price }} Lakhs</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="text-align:center; color:#94a3b8; padding:40px;">No valuations yet. <a href="/dashboard" style="color:#38ef7d;">Run your first one!</a></p>
+    {% endif %}
+</div>
+{% endblock %}
